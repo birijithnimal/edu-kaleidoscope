@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const Courses = () => {
   const { courses } = useData();
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [levelFilter, setLevelFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState("all");
 
   // Extract unique categories
   const categories = Array.from(new Set(courses.map(course => course.category)));
@@ -21,8 +21,8 @@ const Courses = () => {
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter ? course.category === categoryFilter : true;
-    const matchesLevel = levelFilter ? course.level === levelFilter : true;
+    const matchesCategory = categoryFilter === "all" ? true : course.category === categoryFilter;
+    const matchesLevel = levelFilter === "all" ? true : course.level === levelFilter;
     
     return matchesSearch && matchesCategory && matchesLevel;
   });
@@ -53,7 +53,7 @@ const Courses = () => {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -69,7 +69,7 @@ const Courses = () => {
                     <SelectValue placeholder="Level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Levels</SelectItem>
+                    <SelectItem value="all">All Levels</SelectItem>
                     {levels.map(level => (
                       <SelectItem key={level} value={level}>
                         {level}
@@ -80,7 +80,7 @@ const Courses = () => {
               </div>
             </div>
             
-            {(searchTerm || categoryFilter || levelFilter) && (
+            {(searchTerm || categoryFilter !== "all" || levelFilter !== "all") && (
               <div className="mt-4 flex justify-between items-center">
                 <div className="text-sm text-gray-600 dark:text-gray-300">
                   Found {filteredCourses.length} {filteredCourses.length === 1 ? "course" : "courses"}
@@ -90,8 +90,8 @@ const Courses = () => {
                   size="sm"
                   onClick={() => {
                     setSearchTerm("");
-                    setCategoryFilter("");
-                    setLevelFilter("");
+                    setCategoryFilter("all");
+                    setLevelFilter("all");
                   }}
                 >
                   Clear filters
